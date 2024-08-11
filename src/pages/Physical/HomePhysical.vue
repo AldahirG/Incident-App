@@ -1,152 +1,213 @@
 <template>
-    <div class="container mx-auto p-4">
-      <h2 class="text-2xl font-semibold mb-4">Ver Todos</h2>
-  
-      <table v-if="filteredItems.length" class="w-full bg-white shadow-md rounded-lg overflow-hidden">
-        <thead class="bg-gray-500">
-          <tr>
-            <th class="py-2 px-4 text-left">ID</th>
-            <th class="py-2 px-4 text-left">Título</th>
-            <th class="py-2 px-4 text-left">Fecha</th>
-            <th class="py-2 px-4 text-left">Descripción</th>
-            <th class="py-2 px-4 text-left">Status</th>
-            <th class="py-2 px-4 text-left">Foto</th>
-            <th class="py-2 px-4 text-left">Acciones</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr  v-for="item in filteredItems" :key="item.reporte_id" class="border-b text-black ">
-            <td class="py-2 px-4">{{ item.reporte_id }}</td>
-            <td class="py-2 px-4">{{ item.titulo }}</td>
-            <td class="py-2 px-4">{{ item.fecha }}</td>
-            <td class="py-2 px-4">{{ item.descripcion }}</td>
-            <td class="py-2 px-4">
-              <span :class="statusClass(item.estatus)">
-                {{ formatEstatus(item.estatus) }}
-              </span>
-            </td>
-            <td class="py-2 px-4">
-              <img :src="item.fto_url" alt="Foto" class="w-24 h-auto rounded-md" />
-            </td>
-            <td class="py-2 px-4">
-              <button @click="editItem(item.reporte_id)" class="bg-blue-500 text-white px-3 py-1 rounded-md hover:bg-blue-600">
-                Actualizar
-              </button>
-              <button @click="deleteItem(item.reporte_id)" class="bg-red-500 text-white px-3 py-1 rounded-md hover:bg-red-600">
-                Eliminar
-              </button>
-            </td>
-          </tr>
-        </tbody>
-      </table>
-  
-      <p v-else class="text-center text-gray-500">Cargando datos...</p>
+  <div class="flex h-screen bg-gray-100">
+    <!-- Navbar -->
+    <AppNavbar :role="'Physical'" class="w-64 bg-white shadow-lg" />
+
+    <!-- Contenido Principal -->
+    <div class="flex-grow p-6">
+      <div class="bg-white shadow-md rounded-lg p-6 mb-6">
+        <h1 class="text-2xl font-semibold mb-6">Dashboard</h1>
+        
+        <!-- Contenedor para la tabla y el botón -->
+        <div class="flex justify-between items-center mb-4">
+          <DataTable
+            title="Incidencias del día"
+            :items="filteredItems"
+            :headers="headers"
+            @edit-item="editItem"
+            @delete-item="deleteItem"
+          />
+          
+        </div>
+        <div class="flex justify-end">
+          <button class="bg-blue-500 text-white px-4 py-2 rounded-lg hover:bg-blue-600 focus:outline-none" @click="fetchItems">
+            Ver todas las incidencias
+          </button>
+        </div>
+        
+      </div>
+
+      <!-- Gráficas -->
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+        <div class="bg-white shadow-md rounded-lg p-4">
+          <canvas id="chart1"></canvas>
+        </div>
+        <div class="bg-white shadow-md rounded-lg p-4">
+          <canvas id="chart2"></canvas>
+        </div>
+        <div class="bg-white shadow-md rounded-lg p-4">
+          <canvas id="chart3"></canvas>
+        </div>
+      </div>
     </div>
-  </template>
-  
-  <script>
-  // Importa axios si deseas hacer solicitudes HTTP
-  import axios from 'axios';
-  
-  export default {
-    data() {
-      return {
-        items: [], // Inicializar como un array vacío
-      };
-    },
-    created() {
-      this.fetchItems();
-    },
-    computed: {
-      filteredItems() {
-        // Filtra los elementos que tienen estatus 'En Progreso' (valor 2)
-        return this.items.filter(item => item.estatus === 2);
-      }
-    },
-    methods: {
-      async fetchItems() {
-        // const token = localStorage.getItem('idToken'); // Descomenta para obtener el token de localStorage
-        try {
-          // const response = await axios.get('https://omp7h5yonf.execute-api.us-east-1.amazonaws.com/Prod/read_all_incidence', {
-          //   headers: {
-          //     'Authorization': `Bearer ${token}`, // Incluye el token en la cabecera de autorización
-          //   },
-          // });
-  
-          // this.items = response.data; // Asume que la respuesta es un array de elementos
-  
-          // Como bypass, puedes simular datos para ver la estructura de la vista
-          this.items = [
-            {
-              reporte_id: 1,
-              titulo: 'Fallo en proyector',
-              fecha: '2024-08-10',
-              descripcion: 'El proyector no enciende.',
-              estatus: 2,
-              fto_url: 'https://via.placeholder.com/150',
-            },
-            {
-              reporte_id: 2,
-              titulo: 'Problema con aire acondicionado',
-              fecha: '2024-08-10',
-              descripcion: 'El aire acondicionado no enfría.',
-              estatus: 1,
-              fto_url: 'https://via.placeholder.com/150',
-            },
-          ];
-        } catch (error) {
-          console.error('Error fetching data:', error);
-        }
-      },
-      editItem(reporte_id) {
-        this.$router.push({ path: '/put', query: { reporte_id } });
-      },
-      async deleteItem(id) {
-        if (confirm('¿Estás seguro de que deseas eliminar este elemento?')) {
-          // const token = localStorage.getItem('idToken'); // Incluye el token en la cabecera de autorización
-          try {
-            // await axios.delete(`https://omp7h5yonf.execute-api.us-east-1.amazonaws.com/Prod/delete_incidence/${id}`, {
-            //   headers: {
-            //     'Authorization': `Bearer ${token}`,
-            //   },
-            // });
-            alert('Elemento eliminado correctamente.');
-            this.fetchItems(); // Actualiza la lista después de eliminar
-          } catch (error) {
-            console.error('Error al eliminar el elemento:', error);
-            alert('Error al eliminar el elemento.');
+  </div>
+</template>
+
+<script>
+import AppNavbar from '@/components/AppNavbar.vue';
+import DataTable from '@/components/DataTable.vue';
+import { Chart, registerables } from 'chart.js';
+import axios from 'axios';
+
+export default {
+  components: {
+    AppNavbar,
+    DataTable,
+  },
+  data() {
+    return {
+      items: [],
+      headers: ['ID', 'Título', 'Fecha', 'Descripción', 'Status', 'Foto', 'Acciones'],
+    };
+  },
+  created() {
+    this.fetchItems();
+  },
+  computed: {
+    filteredItems() {
+      return this.items.filter(item => item.estatus === 2);
+    }
+  },
+  methods: {
+    async fetchItems() {
+      try {
+        this.items = [
+          {
+            reporte_id: 1,
+            titulo: 'Fallo en proyector',
+            fecha: '2024-08-10',
+            descripcion: 'El proyector no enciende.',
+            estatus: 2,
+            fto_url: 'https://via.placeholder.com/150',
+            actions: true,
+          },
+          {
+            reporte_id: 2,
+            titulo: 'Fallo en impresora',
+            fecha: '2024-08-10',
+            descripcion: 'La impresora no imprime.',
+            estatus: 2,
+            fto_url: 'https://via.placeholder.com/150',
+            actions: true,
           }
-        }
-      },
-      formatEstatus(estatus) {
-        switch (estatus) {
-          case 1:
-            return 'Pendiente';
-          case 2:
-            return 'En Progreso';
-          case 3:
-            return 'Completado';
-          default:
-            return 'Desconocido';
-        }
-      },
-      statusClass(estatus) {
-        switch (estatus) {
-          case 1:
-            return 'text-yellow-500';
-          case 2:
-            return 'text-blue-500';
-          case 3:
-            return 'text-green-500';
-          default:
-            return 'text-gray-500';
+        ];
+      } catch (error) {
+        console.error('Error fetching data:', error);
+      }
+    },
+    editItem(item) {
+      this.$router.push({ path: '/put', query: { reporte_id: item.reporte_id } });
+    },
+    deleteItem(id) {
+      if (confirm('¿Estás seguro de que deseas eliminar este elemento?')) {
+        try {
+          alert('Elemento eliminado correctamente.');
+          this.fetchItems(); // Actualiza la lista después de eliminar
+        } catch (error) {
+          console.error('Error al eliminar el elemento:', error);
+          alert('Error al eliminar el elemento.');
         }
       }
     },
-  };
-  </script>
-  
-  <style scoped>
-  /* Los estilos se han manejado principalmente con Tailwind CSS dentro del template */
-  </style>
-  
+    renderChart() {
+      Chart.register(...registerables);
+
+      // Gráfico 1 - Doughnut Chart
+      new Chart(document.getElementById('chart1'), {
+        type: 'doughnut',
+        data: {
+          labels: ['Pendientes', 'En Progreso', 'Completadas'],
+          datasets: [{
+            data: [5, 10, 15],
+            backgroundColor: ['#FF6384', '#36A2EB', '#FFCE56'],
+          }]
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+        }
+      });
+
+      // Gráfico 2 - Bar Chart
+      new Chart(document.getElementById('chart2'), {
+        type: 'bar',
+        data: {
+          labels: ['Enero', 'Febrero', 'Marzo', 'Abril'],
+          datasets: [{
+            label: 'Incidencias por mes',
+            data: [10, 15, 20, 25],
+            backgroundColor: '#42A5F5',
+          }]
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+        }
+      });
+
+      // Gráfico 3 - Line Chart
+      new Chart(document.getElementById('chart3'), {
+        type: 'line',
+        data: {
+          labels: ['Semana 1', 'Semana 2', 'Semana 3', 'Semana 4'],
+          datasets: [{
+            label: 'Incidencias resueltas',
+            data: [5, 10, 3, 8],
+            borderColor: '#66BB6A',
+            fill: false,
+          }]
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+        }
+      });
+    }
+  },
+  mounted() {
+    this.renderChart();
+  },
+};
+</script>
+
+<style scoped>
+/* Estilos globales para la tabla */
+table {
+  width: 100%;
+  border-collapse: collapse;
+  background-color: #fff;
+  margin-bottom: 20px;
+}
+
+th, td {
+  padding: 12px;
+  text-align: left;
+  border-bottom: 1px solid #eaeaea;
+}
+
+th {
+  background-color: #f7f7f7;
+  text-transform: uppercase;
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: #555;
+}
+
+tr:hover {
+  background-color: #f1f1f1;
+}
+
+button {
+  background-color: #1a73e8;
+  color: white;
+  padding: 6px 12px;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+button:hover {
+  background-color: #0c59cf;
+}
+</style>
