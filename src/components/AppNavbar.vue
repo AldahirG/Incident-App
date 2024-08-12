@@ -55,9 +55,9 @@
         <li 
           v-if="role === 'Physical'" 
           class="px-4 py-2 hover:bg-blue-800 rounded-md"
-          :class="{ 'bg-blue-700': isActive('/pto-liability') }"
+          :class="{ 'bg-blue-700': isActive('/physical-incidents') }"
         >
-          <router-link to="/pto-liability" class="flex items-center">
+          <router-link to="/physical-incidents" class="flex items-center">
             <i class="fas fa-tasks mr-3"></i>
             <span>Todas las Incidencias</span>
           </router-link>
@@ -85,6 +85,18 @@
             <span>Soporte</span>
           </router-link>
         </li>
+         <li 
+          v-if="role === 'User'" 
+          class="px-4 py-2 hover:bg-blue-800 rounded-md"
+          :class="{ 'bg-blue-700': isActive('/user') }"
+        >
+          <router-link to="/user" class="flex items-center">
+            <i class="fas fa-user mr-3"></i>
+            <span>Home</span>
+          </router-link>
+        </li>
+
+        
       </ul>
     </div>
     <!-- Botón de Cerrar Sesión -->

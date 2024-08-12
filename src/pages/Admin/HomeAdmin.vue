@@ -172,7 +172,7 @@
         }
       },
       goToAllIncidences() {
-        this.$router.push('/pto-liability');
+        this.$router.push('/admin-incidents');
       },
     },
     computed: {

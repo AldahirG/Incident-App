@@ -8,6 +8,11 @@ import CreateUser from '@/layout/CreateUser.vue'
 import HomeAdmin from '@/pages/Admin/HomeAdmin.vue'
 import ManageUsers from '@/pages/Admin/ManageUsers.vue'
 import AdminIncidents from '@/pages/Admin/AdminIncidents.vue'
+import HomeUser from '@/pages/User/HomeUser.vue'
+import ReportIncidentView from '@/pages/User/ReportIncidentView.vue'
+import IncidentsView from '@/pages/User/IncidentsView.vue'
+import Porfile from '@/pages/User/Porfile.vue'
+import IncidentsPhysicalView from '@/pages/Physical/IncidentsPhysicalView.vue'
 
 const routes = [
   {
@@ -61,6 +66,47 @@ const routes = [
       requiresAuth: true,
     },
   },
+  {
+    path: '/user',
+    name: 'HomeUser',
+    component: HomeUser,
+    meta: {
+      requiresAuth: true,
+    },
+  },
+  {
+    path: '/report-incident',
+    name: 'ReportIncidentView',
+    component: ReportIncidentView,
+    meta: {
+      requiresAuth: true,
+    },
+  },
+  {
+    path: '/my-incidents',
+    name: 'IncidentsView',
+    component: IncidentsView,
+    meta: {
+      requiresAuth: true,
+    },
+  },
+  {
+    path: '/profile',
+    name: 'Porfile',
+    component: Porfile,
+    meta: {
+      requiresAuth: true,
+    },
+  },
+  {
+    path: '/physical-incidents',
+    name: 'IncidentsPhysicalView',
+    component: IncidentsPhysicalView,
+    meta: {
+      requiresAuth: true,
+    },
+  },
+
 
   // Otras rutas
 ];
